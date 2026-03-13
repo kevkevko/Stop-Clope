@@ -179,6 +179,8 @@ body {
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, transform 0.1s;
   -webkit-user-select: none; user-select: none;
+  touch-action: none;
+  -webkit-touch-callout: none;
 }
 .counter-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.93); }
 .counter-num {
@@ -187,8 +189,16 @@ body {
   color: white;
   line-height: 1;
   min-width: 100px;
+  width: 120px;
   text-align: center;
+  background: none;
+  border: none;
+  outline: none;
+  -moz-appearance: textfield;
+  caret-color: var(--green-light);
 }
+.counter-num::-webkit-outer-spin-button,
+.counter-num::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .counter-status {
   margin-top: 18px;
   font-size: 13px;
@@ -374,9 +384,9 @@ input[type=range]::-webkit-slider-thumb {
     <div class="today-hero">
       <div class="today-date" id="hero-date"></div>
       <div class="counter-row">
-        <button class="counter-btn" onclick="changeCig(-1)">−</button>
-        <div class="counter-num" id="cig-count">0</div>
-        <button class="counter-btn" onclick="changeCig(1)">+</button>
+        <button class="counter-btn" id="btn-minus">−</button>
+        <input type="number" id="cig-count" class="counter-num" value="0" min="0" max="99" inputmode="numeric" pattern="[0-9]*">
+        <button class="counter-btn" id="btn-plus">+</button>
       </div>
       <div class="counter-status" id="cig-status"></div>
       <div class="prog-wrap">
@@ -605,7 +615,7 @@ function renderToday() {
 
   const n = getTodayCigs();
   const limit = todayLimit();
-  document.getElementById('cig-count').textContent = n;
+  document.getElementById('cig-count').value = n;
 
   const pct = limit > 0 ? Math.min(100, Math.round(n / limit * 100)) : 100;
   const bar = document.getElementById('cig-prog');
@@ -756,6 +766,30 @@ if ('serviceWorker' in navigator) {
 // ── INIT ─────────────────────────────────────────────────
 load();
 renderToday();
+
+document.getElementById('btn-minus').addEventListener('pointerup', function(e) {
+  e.preventDefault();
+  changeCig(-1);
+});
+document.getElementById('btn-plus').addEventListener('pointerup', function(e) {
+  e.preventDefault();
+  changeCig(1);
+});
+
+const cigInput = document.getElementById('cig-count');
+cigInput.addEventListener('focus', function() { this.select(); });
+cigInput.addEventListener('change', function() {
+  const val = parseInt(this.value);
+  if (!isNaN(val) && val >= 0) {
+    setTodayCigs(val);
+    renderToday();
+  } else {
+    this.value = getTodayCigs();
+  }
+});
+cigInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { this.blur(); }
+});
 </script>
 </body>
 </html>
