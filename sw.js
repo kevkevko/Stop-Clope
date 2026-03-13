@@ -1,4 +1,4 @@
-const CACHE = 'sans-tabac-v3';
+const CACHE = 'sans-tabac-v1';
 const FILES = [
   './',
   './index.html',

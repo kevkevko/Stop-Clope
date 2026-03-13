@@ -179,8 +179,6 @@ body {
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, transform 0.1s;
   -webkit-user-select: none; user-select: none;
-  touch-action: none;
-  -webkit-touch-callout: none;
 }
 .counter-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.93); }
 .counter-num {
@@ -376,9 +374,9 @@ input[type=range]::-webkit-slider-thumb {
     <div class="today-hero">
       <div class="today-date" id="hero-date"></div>
       <div class="counter-row">
-        <button class="counter-btn" id="btn-minus">−</button>
+        <button class="counter-btn" onclick="changeCig(-1)">−</button>
         <div class="counter-num" id="cig-count">0</div>
-        <button class="counter-btn" id="btn-plus">+</button>
+        <button class="counter-btn" onclick="changeCig(1)">+</button>
       </div>
       <div class="counter-status" id="cig-status"></div>
       <div class="prog-wrap">
@@ -758,15 +756,6 @@ if ('serviceWorker' in navigator) {
 // ── INIT ─────────────────────────────────────────────────
 load();
 renderToday();
-
-document.getElementById('btn-minus').addEventListener('pointerup', function(e) {
-  e.preventDefault();
-  changeCig(-1);
-});
-document.getElementById('btn-plus').addEventListener('pointerup', function(e) {
-  e.preventDefault();
-  changeCig(1);
-});
 </script>
 </body>
 </html>
