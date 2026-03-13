@@ -374,9 +374,9 @@ input[type=range]::-webkit-slider-thumb {
     <div class="today-hero">
       <div class="today-date" id="hero-date"></div>
       <div class="counter-row">
-        <button class="counter-btn" onclick="changeCig(-1)">−</button>
+        <button class="counter-btn" ontouchstart="handleCig(event,-1)" onclick="handleCig(event,-1)">−</button>
         <div class="counter-num" id="cig-count">0</div>
-        <button class="counter-btn" onclick="changeCig(1)">+</button>
+        <button class="counter-btn" ontouchstart="handleCig(event,1)" onclick="handleCig(event,1)">+</button>
       </div>
       <div class="counter-status" id="cig-status"></div>
       <div class="prog-wrap">
@@ -703,6 +703,14 @@ function renderSettings() {
 }
 
 // ── INTERACTIONS ─────────────────────────────────────────
+let lastTap = 0;
+function handleCig(e, delta) {
+  e.preventDefault();
+  const now = Date.now();
+  if (now - lastTap < 300) return; // anti double-fire
+  lastTap = now;
+  changeCig(delta);
+}
 function changeCig(delta) {
   setTodayCigs(getTodayCigs() + delta);
   renderToday();
