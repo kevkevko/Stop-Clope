@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a2e1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sans Tabac">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>Sans Tabac</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-deep: #0a2e1f;
+  --green-mid: #1a5c3a;
+  --green-bright: #2d9c5f;
+  --green-light: #a8e6c3;
+  --green-pale: #e8f7ef;
+  --amber: #f5a623;
+  --red: #e05252;
+  --text: #0a2e1f;
+  --text-muted: #5a7a6a;
+  --bg: #f4fbf7;
+  --card: #ffffff;
+  --border: rgba(10,46,31,0.1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* NAV */
+.nav {
+  background: var(--green-deep);
+  padding: 0;
+  display: flex;
+  border-bottom: none;
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1;
+  padding: 14px 0 10px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.45);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s;
+}
+.nav-btn.active { color: var(--green-light); }
+.nav-icon { font-size: 20px; line-height: 1; }
+
+/* PAGES */
+.pages { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+.page { display: none; padding: 20px 16px 32px; min-height: 100%; }
+.page.active { display: block; }
+
+/* HEADER */
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--green-deep);
+  line-height: 1.1;
+}
+.page-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.card-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* METRICS GRID */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.metric-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+.metric-card.accent {
+  background: var(--green-deep);
+  border-color: var(--green-deep);
+}
+.metric-card.accent .metric-val { color: var(--green-light); }
+.metric-card.accent .metric-label { color: rgba(255,255,255,0.5); }
+.metric-val {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--green-deep);
+  line-height: 1;
+}
+.metric-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* TODAY COUNTER */
+.today-hero {
+  background: var(--green-deep);
+  border-radius: 22px;
+  padding: 28px 20px;
+  margin-bottom: 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.today-hero::before {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(45,156,95,0.15);
+  top: -60px; right: -60px;
+}
+.today-date {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--green-light);
+  opacity: 0.7;
+  margin-bottom: 20px;
+}
+.counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+.counter-btn {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  -webkit-user-select: none; user-select: none;
+}
+.counter-btn:active { background: rgba(255,255,255,0.2); transform: scale(0.93); }
+.counter-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 72px;
+  color: white;
+  line-height: 1;
+  min-width: 100px;
+  text-align: center;
+}
+.counter-status {
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+.status-ok { color: var(--green-light); }
+.status-warn { color: var(--amber); }
+.status-over { color: #ff8a8a; }
+
+/* PROGRESS BAR */
+.prog-wrap { margin-top: 16px; }
+.prog-bg {
+  height: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease, background 0.3s;
+}
+
+/* WEEK STRIP */
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.day-cell {
+  border-radius: 12px;
+  padding: 8px 4px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+}
+.day-cell.today { border-color: var(--green-bright); border-width: 2px; }
+.day-cell.good { background: #e8f7ef; border-color: #a8e6c3; }
+.day-cell.bad { background: #fdf0f0; border-color: #f5c0c0; }
+.day-name { font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 500; }
+.day-val { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin-top: 2px; }
+.day-cell.good .day-val { color: var(--green-mid); }
+.day-cell.bad .day-val { color: var(--red); }
+
+/* SAVINGS */
+.savings-big {
+  font-family: 'DM Serif Display', serif;
+  font-size: 42px;
+  color: var(--green-deep);
+  line-height: 1;
+}
+.savings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.savings-row:last-child { border-bottom: none; }
+.savings-val { font-weight: 500; color: var(--green-mid); }
+
+/* PLAN */
+.plan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.plan-item:last-child { border-bottom: none; }
+.plan-week { font-size: 13px; color: var(--text-muted); }
+.plan-target { font-weight: 500; font-size: 15px; }
+.badge {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+.badge-ok { background: #e8f7ef; color: var(--green-mid); }
+.badge-done { background: #f0f0f0; color: #999; }
+.badge-future { background: #f8f8f8; color: #bbb; }
+
+/* SETTINGS */
+.setting-row {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-label { font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+.setting-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.slider-wrap { display: flex; align-items: center; gap: 12px; }
+input[type=range] {
+  -webkit-appearance: none;
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--green-light);
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(26,92,58,0.3);
+}
+.slider-val {
+  font-weight: 500;
+  font-size: 15px;
+  min-width: 50px;
+  text-align: right;
+  color: var(--green-deep);
+}
+.save-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--green-deep);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s;
+}
+.save-btn:active { opacity: 0.85; }
+
+/* INSTALL BANNER */
+.install-banner {
+  background: linear-gradient(135deg, var(--green-mid), var(--green-deep));
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+.install-icon { font-size: 28px; flex-shrink: 0; }
+.install-text { flex: 1; }
+.install-title { font-weight: 500; color: white; font-size: 14px; }
+.install-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+.install-arrow { color: white; opacity: 0.7; font-size: 18px; }
+
+/* MOTIVATION CARD */
+.motivation {
+  background: var(--green-pale);
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(45,156,95,0.2);
+}
+.motivation-quote {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  font-size: 17px;
+  color: var(--green-deep);
+  line-height: 1.5;
+}
+.motivation-day {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="pages">
+  <!-- PAGE AUJOURD'HUI -->
+  <div class="page active" id="page-today">
+    <div class="page-header">
+      <div class="page-title">Aujourd'hui</div>
+      <div class="page-sub" id="header-date">Chargement…</div>
+    </div>
+
+    <div class="today-hero">
+      <div class="today-date" id="hero-date"></div>
+      <div class="counter-row">
+        <button class="counter-btn" onclick="changeCig(-1)">−</button>
+        <div class="counter-num" id="cig-count">0</div>
+        <button class="counter-btn" onclick="changeCig(1)">+</button>
+      </div>
+      <div class="counter-status" id="cig-status"></div>
+      <div class="prog-wrap">
+        <div class="prog-bg"><div class="prog-fill" id="cig-prog" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Cette semaine</div>
+      <div class="week-strip" id="week-strip"></div>
+    </div>
+
+    <div class="motivation" id="motivation-card">
+      <div class="motivation-quote" id="motivation-text"></div>
+      <div class="motivation-day" id="motivation-day"></div>
+    </div>
+  </div>
+
+  <!-- PAGE PROGRESSION -->
+  <div class="page" id="page-progress">
+    <div class="page-header">
+      <div class="page-title">Ma progression</div>
+      <div class="page-sub">Semaine <span id="prog-week-num">1</span> sur <span id="prog-week-total">10</span></div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card accent">
+        <div class="metric-val" id="prog-today-limit">—</div>
+        <div class="metric-label">Cig. max / jour</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="prog-weeks-left">—</div>
+        <div class="metric-label">Semaines restantes</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="prog-start">—</div>
+        <div class="metric-label">Au départ</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="prog-target-date">—</div>
+        <div class="metric-label">Date d'arrêt</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Plan semaine par semaine</div>
+      <div id="plan-list"></div>
+    </div>
+  </div>
+
+  <!-- PAGE ÉCONOMIES -->
+  <div class="page" id="page-savings">
+    <div class="page-header">
+      <div class="page-title">Mes économies</div>
+      <div class="page-sub">Argent récupéré en arrêtant</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Total jusqu'à l'arrêt complet</div>
+      <div class="savings-big" id="sav-total">—</div>
+    </div>
+
+    <div class="card">
+      <div class="savings-row">
+        <span>Cette semaine</span>
+        <span class="savings-val" id="sav-week">—</span>
+      </div>
+      <div class="savings-row">
+        <span>Ce mois-ci</span>
+        <span class="savings-val" id="sav-month">—</span>
+      </div>
+      <div class="savings-row">
+        <span>Cette année</span>
+        <span class="savings-val" id="sav-year">—</span>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-val" id="sav-cig-saved">—</div>
+        <div class="metric-label">Cig. évitées / sem</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="sav-price-cig">—</div>
+        <div class="metric-label">Prix / cigarette</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE RÉGLAGES -->
+  <div class="page" id="page-settings">
+    <div class="page-header">
+      <div class="page-title">Réglages</div>
+      <div class="page-sub">Personnalisez votre parcours</div>
+    </div>
+
+    <div id="install-banner-wrap"></div>
+
+    <div class="card">
+      <div class="setting-row">
+        <div class="setting-label">Cigarettes par jour (actuellement)</div>
+        <div class="slider-wrap">
+          <input type="range" min="1" max="40" value="20" step="1" id="sl-current" oninput="sliderUpdate()">
+          <div class="slider-val" id="out-current">20</div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Prix du paquet (€)</div>
+        <div class="slider-wrap">
+          <input type="range" min="5" max="15" value="11" step="0.5" id="sl-price" oninput="sliderUpdate()">
+          <div class="slider-val" id="out-price">11 €</div>
+        </div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-label">Réduction par semaine (cigarettes)</div>
+        <div class="setting-sub">Ex : 2 = vous fumez 2 de moins chaque semaine</div>
+        <div class="slider-wrap">
+          <input type="range" min="1" max="5" value="2" step="1" id="sl-reduce" oninput="sliderUpdate()">
+          <div class="slider-val" id="out-reduce">2</div>
+        </div>
+      </div>
+      <button class="save-btn" onclick="saveSettings()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <button class="nav-btn active" id="nav-today" onclick="goTo('today')">
+    <span class="nav-icon">🚬</span>
+    <span>Aujourd'hui</span>
+  </button>
+  <button class="nav-btn" id="nav-progress" onclick="goTo('progress')">
+    <span class="nav-icon">📈</span>
+    <span>Progression</span>
+  </button>
+  <button class="nav-btn" id="nav-savings" onclick="goTo('savings')">
+    <span class="nav-icon">💰</span>
+    <span>Économies</span>
+  </button>
+  <button class="nav-btn" id="nav-settings" onclick="goTo('settings')">
+    <span class="nav-icon">⚙️</span>
+    <span>Réglages</span>
+  </button>
+</div>
+
+<script>
+// ── STATE ────────────────────────────────────────────────
+let state = {
+  current: 20,
+  price: 11,
+  reduce: 2,
+  weekData: {},
+  startDate: new Date().toISOString().split('T')[0]
+};
+
+const motivations = [
+  "Chaque cigarette en moins est une victoire sur vous-même.",
+  "Votre corps commence à guérir dès la première heure sans fumer.",
+  "La liberté se construit jour après jour, décision après décision.",
+  "Dans quelques semaines, respirer profondément sera un plaisir retrouvé.",
+  "Vous êtes plus fort que n'importe quelle envie.",
+  "Chaque refus est un pas vers la meilleure version de vous-même.",
+  "L'argent économisé, c'est un projet de vie qui se construit.",
+];
+
+// ── STORAGE ─────────────────────────────────────────────
+function load() {
+  try {
+    const saved = localStorage.getItem('sans-tabac-state');
+    if (saved) state = { ...state, ...JSON.parse(saved) };
+  } catch(e) {}
+}
+function save() {
+  try { localStorage.setItem('sans-tabac-state', JSON.stringify(state)); } catch(e) {}
+}
+
+// ── TODAY KEY ────────────────────────────────────────────
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+function getTodayCigs() { return state.weekData[todayKey()] || 0; }
+function setTodayCigs(n) {
+  state.weekData[todayKey()] = Math.max(0, n);
+  save();
+}
+
+// ── COMPUTED ─────────────────────────────────────────────
+function currentWeek() {
+  const start = new Date(state.startDate);
+  const now = new Date();
+  return Math.floor((now - start) / (7 * 24 * 3600 * 1000)) + 1;
+}
+function todayLimit() {
+  const w = currentWeek();
+  return Math.max(0, state.current - (w - 1) * state.reduce);
+}
+function weeksToStop() {
+  return Math.ceil(state.current / state.reduce);
+}
+function pricePerCig() {
+  return state.price / 20;
+}
+
+// ── NAVIGATION ───────────────────────────────────────────
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  renderPage(page);
+}
+
+// ── RENDER ───────────────────────────────────────────────
+function renderPage(page) {
+  if (page === 'today') renderToday();
+  if (page === 'progress') renderProgress();
+  if (page === 'savings') renderSavings();
+  if (page === 'settings') renderSettings();
+}
+
+function renderToday() {
+  const now = new Date();
+  const opts = { weekday:'long', day:'numeric', month:'long' };
+  const dateStr = now.toLocaleDateString('fr-FR', opts);
+  document.getElementById('header-date').textContent = dateStr;
+  document.getElementById('hero-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+  const n = getTodayCigs();
+  const limit = todayLimit();
+  document.getElementById('cig-count').textContent = n;
+
+  const pct = limit > 0 ? Math.min(100, Math.round(n / limit * 100)) : 100;
+  const bar = document.getElementById('cig-prog');
+  bar.style.width = pct + '%';
+  bar.style.background = n > limit ? '#ff6b6b' : n >= limit * 0.8 ? var_amber() : '#2d9c5f';
+
+  const status = document.getElementById('cig-status');
+  if (n === 0) { status.textContent = `Objectif : max ${limit} cigarette${limit>1?'s':''} aujourd'hui`; status.className = 'counter-status status-ok'; }
+  else if (n < limit) { const r = limit-n; status.textContent = `Encore ${r} possible${r>1?'s':''}`; status.className = 'counter-status status-ok'; }
+  else if (n === limit) { status.textContent = 'Limite atteinte pour aujourd\'hui'; status.className = 'counter-status status-warn'; }
+  else { status.textContent = `${n - limit} au-dessus de l'objectif`; status.className = 'counter-status status-over'; }
+
+  renderWeekStrip();
+  renderMotivation();
+}
+
+function var_amber() { return '#f5a623'; }
+
+function renderWeekStrip() {
+  const limit = todayLimit();
+  const days = ['L','M','M','J','V','S','D'];
+  const now = new Date();
+  const dow = now.getDay(); // 0=Sun
+  const strip = document.getElementById('week-strip');
+  strip.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - ((dow === 0 ? 6 : dow - 1)) + i);
+    const key = d.toISOString().split('T')[0];
+    const val = state.weekData[key];
+    const isToday = key === todayKey();
+    let cls = 'day-cell';
+    if (isToday) cls += ' today';
+    else if (val !== undefined) cls += val <= limit ? ' good' : ' bad';
+    strip.innerHTML += `<div class="${cls}"><div class="day-name">${days[i]}</div><div class="day-val">${val !== undefined ? val : '·'}</div></div>`;
+  }
+}
+
+function renderMotivation() {
+  const idx = new Date().getDate() % motivations.length;
+  document.getElementById('motivation-text').textContent = `« ${motivations[idx]} »`;
+  const w = currentWeek();
+  document.getElementById('motivation-day').textContent = `Semaine ${w} · Continuez comme ça !`;
+}
+
+function renderProgress() {
+  const w = currentWeek();
+  const total = weeksToStop();
+  document.getElementById('prog-week-num').textContent = w;
+  document.getElementById('prog-week-total').textContent = total;
+  document.getElementById('prog-today-limit').textContent = todayLimit();
+  document.getElementById('prog-weeks-left').textContent = Math.max(0, total - w + 1);
+  document.getElementById('prog-start').textContent = state.current;
+
+  const targetDate = new Date(state.startDate);
+  targetDate.setDate(targetDate.getDate() + total * 7);
+  document.getElementById('prog-target-date').textContent = targetDate.toLocaleDateString('fr-FR', {day:'numeric', month:'short'});
+
+  const list = document.getElementById('plan-list');
+  list.innerHTML = '';
+  for (let wk = 1; wk <= Math.min(total, 10); wk++) {
+    const target = Math.max(0, state.current - (wk - 1) * state.reduce);
+    const isCurrent = wk === w;
+    const isPast = wk < w;
+    let badge = isCurrent ? '<span class="badge badge-ok">En cours</span>' : isPast ? '<span class="badge badge-done">Terminée</span>' : '<span class="badge badge-future">À venir</span>';
+    list.innerHTML += `<div class="plan-item"><span class="plan-week">Semaine ${wk}</span><span class="plan-target">${target} cig/jour</span>${badge}</div>`;
+  }
+  if (total > 10) list.innerHTML += `<div style="font-size:13px;color:var(--text-muted);padding:10px 0;text-align:center">+ ${total-10} semaines supplémentaires</div>`;
+}
+
+function renderSavings() {
+  const total = weeksToStop();
+  const ppc = pricePerCig();
+  let totalSaved = 0;
+  for (let w = 1; w <= total; w++) {
+    const target = Math.max(0, state.current - (w-1)*state.reduce);
+    totalSaved += (state.current - target) * 7 * ppc;
+  }
+  const weekSaved = state.reduce * 7 * ppc;
+  document.getElementById('sav-total').textContent = totalSaved.toFixed(0) + ' €';
+  document.getElementById('sav-week').textContent = weekSaved.toFixed(2) + ' €';
+  document.getElementById('sav-month').textContent = (weekSaved * 4.33).toFixed(2) + ' €';
+  document.getElementById('sav-year').textContent = (weekSaved * 52).toFixed(0) + ' €';
+  document.getElementById('sav-cig-saved').textContent = state.reduce * 7;
+  document.getElementById('sav-price-cig').textContent = ppc.toFixed(2) + ' €';
+}
+
+function renderSettings() {
+  document.getElementById('sl-current').value = state.current;
+  document.getElementById('sl-price').value = state.price;
+  document.getElementById('sl-reduce').value = state.reduce;
+  document.getElementById('out-current').textContent = state.current;
+  document.getElementById('out-price').textContent = parseFloat(state.price).toFixed(1) + ' €';
+  document.getElementById('out-reduce').textContent = state.reduce;
+}
+
+// ── INTERACTIONS ─────────────────────────────────────────
+function changeCig(delta) {
+  setTodayCigs(getTodayCigs() + delta);
+  renderToday();
+}
+
+function sliderUpdate() {
+  document.getElementById('out-current').textContent = document.getElementById('sl-current').value;
+  document.getElementById('out-price').textContent = parseFloat(document.getElementById('sl-price').value).toFixed(1) + ' €';
+  document.getElementById('out-reduce').textContent = document.getElementById('sl-reduce').value;
+}
+
+function saveSettings() {
+  state.current = parseInt(document.getElementById('sl-current').value);
+  state.price = parseFloat(document.getElementById('sl-price').value);
+  state.reduce = parseInt(document.getElementById('sl-reduce').value);
+  save();
+  goTo('today');
+}
+
+// ── PWA INSTALL ──────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const wrap = document.getElementById('install-banner-wrap');
+  wrap.innerHTML = `<div class="install-banner" onclick="installApp()">
+    <div class="install-icon">📲</div>
+    <div class="install-text">
+      <div class="install-title">Installer l'application</div>
+      <div class="install-sub">Ajoutez à votre écran d'accueil pour un accès rapide</div>
+    </div>
+    <div class="install-arrow">›</div>
+  </div>`;
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('install-banner-wrap').innerHTML = '';
+    });
+  }
+}
+
+// ── SERVICE WORKER ───────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ── INIT ─────────────────────────────────────────────────
+load();
+renderToday();
+</script>
+</body>
+</html>
