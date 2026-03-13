@@ -369,6 +369,71 @@ input[type=range]::-webkit-slider-thumb {
   margin-top: 10px;
   font-weight: 500;
 }
+
+/* STREAK BANNER */
+.streak-banner {
+  background: var(--green-deep);
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.streak-left { display: flex; align-items: center; gap: 10px; }
+.streak-fire-big { font-size: 32px; line-height: 1; }
+.streak-info-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: white; line-height: 1; }
+.streak-info-sub { font-size: 12px; color: var(--green-light); margin-top: 2px; opacity: 0.8; }
+.hearts-wrap { display: flex; gap: 4px; }
+.heart-icon { font-size: 18px; }
+.heart-icon.lost { opacity: 0.2; filter: grayscale(1); }
+
+/* XP BAR */
+.xp-card { background: var(--card); border-radius: 18px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid var(--border); }
+.xp-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.league-gem { font-size: 36px; line-height: 1; }
+.league-details { flex: 1; }
+.league-name { font-size: 16px; font-weight: 500; color: var(--green-deep); }
+.league-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.xp-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.xp-row span { font-size: 12px; color: var(--text-muted); }
+.xp-row strong { font-size: 12px; font-weight: 500; color: var(--green-deep); }
+.xp-bar-bg { background: #e8f7ef; border-radius: 99px; height: 10px; overflow: hidden; }
+.xp-bar-fill { height: 100%; border-radius: 99px; background: var(--green-bright); transition: width 0.6s ease; }
+
+/* ACHIEVEMENTS */
+.ach-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ach-item { border-radius: 14px; padding: 14px 10px; text-align: center; border: 1px solid var(--border); background: var(--card); }
+.ach-item.unlocked { background: #e8f7ef; border-color: #a8e6c3; }
+.ach-item.locked { opacity: 0.45; }
+.ach-emoji { font-size: 26px; line-height: 1; margin-bottom: 6px; }
+.ach-name { font-size: 11px; font-weight: 500; color: var(--text-muted); line-height: 1.3; }
+.ach-item.unlocked .ach-name { color: var(--green-mid); }
+.ach-desc { font-size: 10px; color: var(--text-muted); margin-top: 3px; line-height: 1.3; }
+
+/* SEGMENT BAR */
+.seg-bar { display: flex; gap: 3px; margin-top: 12px; }
+.seg { flex: 1; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.15); }
+.seg.filled { background: var(--green-bright); }
+.seg.warn-fill { background: var(--amber); }
+
+/* TOAST */
+.toast {
+  position: absolute;
+  top: 70px; left: 50%; transform: translateX(-50%);
+  background: var(--green-deep);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 100;
+}
+.toast.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -392,6 +457,18 @@ input[type=range]::-webkit-slider-thumb {
       <div class="prog-wrap">
         <div class="prog-bg"><div class="prog-fill" id="cig-prog" style="width:0%"></div></div>
       </div>
+      <div class="seg-bar" id="seg-bar"></div>
+    </div>
+
+    <div class="streak-banner">
+      <div class="streak-left">
+        <div class="streak-fire-big">🔥</div>
+        <div>
+          <div class="streak-info-title"><span id="streak-count">0</span> jour<span id="streak-s"></span></div>
+          <div class="streak-info-sub">de streak — continuez !</div>
+        </div>
+      </div>
+      <div class="hearts-wrap" id="hearts-wrap"></div>
     </div>
 
     <div class="card">
@@ -476,6 +553,58 @@ input[type=range]::-webkit-slider-thumb {
     </div>
   </div>
 
+  <!-- PAGE PROFIL -->
+  <div class="page" id="page-profile">
+    <div class="page-header">
+      <div class="page-title">Mon profil</div>
+      <div class="page-sub" id="profile-sub">Niveau en cours</div>
+    </div>
+
+    <div class="xp-card">
+      <div class="xp-top">
+        <div class="league-gem" id="league-gem">🪵</div>
+        <div class="league-details">
+          <div class="league-name" id="league-name">Ligue Bois</div>
+          <div class="league-sub" id="league-next">prochain palier : Pierre</div>
+        </div>
+      </div>
+      <div class="xp-row">
+        <span>XP total</span>
+        <strong id="xp-val">0 XP</strong>
+      </div>
+      <div class="xp-bar-bg"><div class="xp-bar-fill" id="xp-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Achievements débloqués</div>
+      <div class="ach-grid" id="ach-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Mes stats</div>
+      <div class="savings-row">
+        <span>Streak actuel</span>
+        <span class="savings-val" id="stat-streak">0 jour</span>
+      </div>
+      <div class="savings-row">
+        <span>Meilleur streak</span>
+        <span class="savings-val" id="stat-best-streak">0 jour</span>
+      </div>
+      <div class="savings-row">
+        <span>Cigarettes évitées</span>
+        <span class="savings-val" id="stat-avoided">0</span>
+      </div>
+      <div class="savings-row">
+        <span>Jours dans les clous</span>
+        <span class="savings-val" id="stat-good-days">0</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
   <!-- PAGE RÉGLAGES -->
   <div class="page" id="page-settings">
     <div class="page-header">
@@ -527,6 +656,10 @@ input[type=range]::-webkit-slider-thumb {
     <span class="nav-icon">💰</span>
     <span>Économies</span>
   </button>
+  <button class="nav-btn" id="nav-profile" onclick="goTo('profile')">
+    <span class="nav-icon">🏆</span>
+    <span>Profil</span>
+  </button>
   <button class="nav-btn" id="nav-settings" onclick="goTo('settings')">
     <span class="nav-icon">⚙️</span>
     <span>Réglages</span>
@@ -553,7 +686,98 @@ const motivations = [
   "L'argent économisé, c'est un projet de vie qui se construit.",
 ];
 
-// ── STORAGE ─────────────────────────────────────────────
+// ── GAMIFICATION ─────────────────────────────────────────
+const LEAGUES = [
+  { name: 'Ligue Bois',      gem: '🪵', xpNeeded: 0,    next: 'Pierre' },
+  { name: 'Ligue Pierre',    gem: '🪨', xpNeeded: 100,  next: 'Fer' },
+  { name: 'Ligue Fer',       gem: '⚒️', xpNeeded: 300,  next: 'Or' },
+  { name: 'Ligue Or',        gem: '🥇', xpNeeded: 600,  next: 'Diamant' },
+  { name: 'Ligue Diamant',   gem: '💎', xpNeeded: 1000, next: 'Netherite' },
+  { name: 'Ligue Netherite', gem: '👑', xpNeeded: 2000, next: null },
+];
+
+const ACHIEVEMENTS = [
+  { id: 'day1',    emoji: '🪵', name: 'Mode Survie',      desc: '1 jour dans les clous',     check: s => s.goodDays >= 1 },
+  { id: 'day3',    emoji: '⛏️', name: 'Mineur débutant',  desc: '3 jours consécutifs',        check: s => s.bestStreak >= 3 },
+  { id: 'day7',    emoji: '🏠', name: 'La maison',         desc: '7 jours de streak',          check: s => s.bestStreak >= 7 },
+  { id: 'day30',   emoji: '🏰', name: 'Château de pierre', desc: '30 jours de streak',         check: s => s.bestStreak >= 30 },
+  { id: 'cig10',   emoji: '💨', name: 'Premiers poumons',  desc: '10 cig. évitées',            check: s => s.avoided >= 10 },
+  { id: 'cig50',   emoji: '🫁', name: 'Souffle retrouvé',  desc: '50 cig. évitées',            check: s => s.avoided >= 50 },
+  { id: 'cig100',  emoji: '💎', name: 'Diamant trouvé',    desc: '100 cig. évitées',           check: s => s.avoided >= 100 },
+  { id: 'cig500',  emoji: '🌟', name: 'Netherite',         desc: '500 cig. évitées',           check: s => s.avoided >= 500 },
+  { id: 'week1',   emoji: '🎯', name: 'Le départ',         desc: 'Semaine 1 terminée',         check: s => s.currentWeek > 1 },
+  { id: 'nether',  emoji: '🔮', name: 'Le Nether',         desc: 'Mi-parcours atteint',        check: s => s.halfWay },
+  { id: 'end',     emoji: '🏁', name: "L'End en vue",      desc: 'Dernière semaine',           check: s => s.lastWeek },
+  { id: 'free',    emoji: '👑', name: 'Libre !',            desc: 'Arrêt total atteint',        check: s => s.stopped },
+];
+
+function computeGamification() {
+  const limit = todayLimit();
+  const allKeys = Object.keys(state.weekData).sort();
+  let streak = 0, bestStreak = 0, cur = 0, goodDays = 0, avoided = 0;
+
+  for (const key of allKeys) {
+    const val = state.weekData[key];
+    if (val <= limit) {
+      cur++; goodDays++;
+      if (cur > bestStreak) bestStreak = cur;
+    } else { cur = 0; }
+  }
+  streak = cur;
+
+  const startDate = new Date(state.startDate);
+  for (const key of allKeys) {
+    const dayNum = Math.floor((new Date(key) - startDate) / 86400000);
+    const weekNum = Math.floor(dayNum / 7) + 1;
+    const dayLimit = Math.max(0, state.current - (weekNum - 1) * state.reduce);
+    const val = state.weekData[key];
+    if (val < dayLimit) avoided += dayLimit - val;
+  }
+
+  const xp = goodDays * 10 + bestStreak * 5 + Math.floor(avoided / 5) * 3;
+  let leagueIdx = 0;
+  for (let i = LEAGUES.length - 1; i >= 0; i--) {
+    if (xp >= LEAGUES[i].xpNeeded) { leagueIdx = i; break; }
+  }
+
+  const w = currentWeek();
+  const total = weeksToStop();
+  const hearts = Math.max(0, 5 - Object.values(state.weekData).filter(v => v > limit).length);
+
+  return {
+    streak, bestStreak, goodDays, avoided, xp, leagueIdx,
+    hearts: Math.min(5, hearts),
+    currentWeek: w,
+    halfWay: w >= Math.ceil(total / 2),
+    lastWeek: w >= total - 1,
+    stopped: todayLimit() === 0
+  };
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function checkNewAchievements(gam) {
+  const unlocked = state.unlockedAch || [];
+  let newOnes = [];
+  for (const ach of ACHIEVEMENTS) {
+    if (!unlocked.includes(ach.id) && ach.check(gam)) {
+      newOnes.push(ach);
+      unlocked.push(ach.id);
+    }
+  }
+  state.unlockedAch = unlocked;
+  if (newOnes.length > 0) {
+    save();
+    setTimeout(() => showToast('🏆 ' + newOnes[0].emoji + ' ' + newOnes[0].name + ' débloqué !'), 500);
+  }
+}
+
+
 function load() {
   try {
     const saved = localStorage.getItem('sans-tabac-state');
@@ -603,6 +827,7 @@ function renderPage(page) {
   if (page === 'today') renderToday();
   if (page === 'progress') renderProgress();
   if (page === 'savings') renderSavings();
+  if (page === 'profile') renderProfile();
   if (page === 'settings') renderSettings();
 }
 
@@ -620,19 +845,40 @@ function renderToday() {
   const pct = limit > 0 ? Math.min(100, Math.round(n / limit * 100)) : 100;
   const bar = document.getElementById('cig-prog');
   bar.style.width = pct + '%';
-  bar.style.background = n > limit ? '#ff6b6b' : n >= limit * 0.8 ? var_amber() : '#2d9c5f';
+  bar.style.background = n > limit ? '#ff6b6b' : n >= limit * 0.8 ? '#f5a623' : '#2d9c5f';
 
   const status = document.getElementById('cig-status');
   if (n === 0) { status.textContent = `Objectif : max ${limit} cigarette${limit>1?'s':''} aujourd'hui`; status.className = 'counter-status status-ok'; }
   else if (n < limit) { const r = limit-n; status.textContent = `Encore ${r} possible${r>1?'s':''}`; status.className = 'counter-status status-ok'; }
-  else if (n === limit) { status.textContent = 'Limite atteinte pour aujourd\'hui'; status.className = 'counter-status status-warn'; }
+  else if (n === limit) { status.textContent = "Limite atteinte pour aujourd'hui"; status.className = 'counter-status status-warn'; }
   else { status.textContent = `${n - limit} au-dessus de l'objectif`; status.className = 'counter-status status-over'; }
+
+  const segBar = document.getElementById('seg-bar');
+  segBar.innerHTML = '';
+  for (let i = 0; i < limit; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (i < n ? (n <= limit ? ' filled' : ' warn-fill') : '');
+    segBar.appendChild(seg);
+  }
+
+  const gam = computeGamification();
+  checkNewAchievements(gam);
+
+  document.getElementById('streak-count').textContent = gam.streak;
+  document.getElementById('streak-s').textContent = gam.streak > 1 ? 's' : '';
+
+  const heartsWrap = document.getElementById('hearts-wrap');
+  heartsWrap.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const h = document.createElement('span');
+    h.className = 'heart-icon' + (i >= gam.hearts ? ' lost' : '');
+    h.textContent = '❤️';
+    heartsWrap.appendChild(h);
+  }
 
   renderWeekStrip();
   renderMotivation();
 }
-
-function var_amber() { return '#f5a623'; }
 
 function renderWeekStrip() {
   const limit = todayLimit();
@@ -686,7 +932,43 @@ function renderProgress() {
   if (total > 10) list.innerHTML += `<div style="font-size:13px;color:var(--text-muted);padding:10px 0;text-align:center">+ ${total-10} semaines supplémentaires</div>`;
 }
 
-function renderSavings() {
+function renderProfile() {
+  const gam = computeGamification();
+  const league = LEAGUES[gam.leagueIdx];
+  const nextLeague = LEAGUES[gam.leagueIdx + 1];
+
+  document.getElementById('profile-sub').textContent = `${gam.xp} XP accumulés`;
+  document.getElementById('league-gem').textContent = league.gem;
+  document.getElementById('league-name').textContent = league.name;
+  document.getElementById('league-next').textContent = nextLeague ? `prochain palier : ${league.next} (${nextLeague.xpNeeded - gam.xp} XP)` : 'Niveau maximum atteint !';
+
+  const xpMin = league.xpNeeded;
+  const xpMax = nextLeague ? nextLeague.xpNeeded : gam.xp;
+  const pct = nextLeague ? Math.min(100, Math.round((gam.xp - xpMin) / (xpMax - xpMin) * 100)) : 100;
+  document.getElementById('xp-val').textContent = gam.xp + ' XP';
+  document.getElementById('xp-bar').style.width = pct + '%';
+
+  const unlocked = state.unlockedAch || [];
+  const grid = document.getElementById('ach-grid');
+  grid.innerHTML = '';
+  for (const ach of ACHIEVEMENTS) {
+    const isUnlocked = unlocked.includes(ach.id) || ach.check(gam);
+    grid.innerHTML += `<div class="ach-item ${isUnlocked ? 'unlocked' : 'locked'}">
+      <div class="ach-emoji">${ach.emoji}</div>
+      <div class="ach-name">${ach.name}</div>
+      <div class="ach-desc">${ach.desc}</div>
+    </div>`;
+  }
+
+  const s = gam.streak;
+  document.getElementById('stat-streak').textContent = s + ' jour' + (s > 1 ? 's' : '');
+  const b = gam.bestStreak;
+  document.getElementById('stat-best-streak').textContent = b + ' jour' + (b > 1 ? 's' : '');
+  document.getElementById('stat-avoided').textContent = gam.avoided;
+  document.getElementById('stat-good-days').textContent = gam.goodDays;
+}
+
+
   const total = weeksToStop();
   const ppc = pricePerCig();
   let totalSaved = 0;
